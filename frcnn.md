@@ -3,6 +3,7 @@ Welcome to the ModelArts-Lab wiki!
    Faster RCNN是由Ross Girshick由何凯明等人在2016年将其用于目标检测任务中，能够完成高效的与传统的RCNN相比，利用RPN(Region Proposal Networks)完成候选框的选择，Fast RCNN的结构如下图所示：
 
 ![frcnn](./frcnn.png)
+
 如图，我们知道FRCNN分为如下几个结构：
 
 Faster R-CNN网络分为两部分，一部分是Region Proposal Network(RPN)，另一部分是Fast R-CNN。其中RPN包括图中proposals和conv layers，Fast R-CNN包括卷积层、ROI pooling及后面全连接层等部分。另外，卷积层被RPN和Fast R-CNN两部分共享。
@@ -10,8 +11,9 @@ Faster RCNN首先将整张图片输进CNN，提取图片的feature maps。将图
 ## RPN
 相比于Fast RCNN,Faster R-CNN引入RPN(Region Proposal Network)完成候选框的提取，使得算法效率得到进一步提升。   
 RPN将任意尺寸大小的图片作为输入，输出若干个矩形目标框，每一个框都有一个锚点属于前景或后景的概率，用于判断是否是需要识别的候选目标框。
-为了生成区域候选框，在卷积层最后一层feature map上滑动一个n*n的网络,将卷积生成的feature map与nxn的窗口进行卷积运算。每一个滑动窗口都映射为一个更低维的特征。得到的特征送入两个分支中，一个用于框分类，另一个用于框回归。此网络执行滑动窗口形式，所有空间位置都共享全连接层。如下图所示：
+为了生成区域候选框，在卷积层最后一层feature map上滑动一个(n\*n)的网络,将卷积生成的feature map与nxn的窗口进行卷积运算。每一个滑动窗口都映射为一个更低维的特征。得到的特征送入两个分支中，一个用于框分类，另一个用于框回归。此网络执行滑动窗口形式，所有空间位置都共享全连接层。如下图所示：
 ![rpn](./rpn.png)
+
 滑动窗口的中心在图像上对应一片区域，计算出该区域的中心位置后以该位置为中心，按3种scale（即面积，128*128，256*256，512*512）、每种scale各有3种长宽比取9个矩形区域。这些区域就是提取到的anchors boxes。可见，feature maps中的一个位置，共有9个anchors，提取到的候选anchors的大致位置也被获悉。另外，3种scale也是可以根据具体情况更改的，更改时最好能使最大的scale能基本将input image覆盖。
 在确定好nchors之后，就能确定相应的位置信息，通过2次bounding-box regression对位置进行修正。
 首先判断anchors是否为前景，使用softmax classifier对anchors进行二分类，输出两个概率值，即图中左侧对应的2k score。其次，计算对于anchors的bounding box regression偏移量，以修正边框位置。
