@@ -1,5 +1,5 @@
 Welcome to the ModelArts-Lab wiki!
-# FRCNN模型解析
+# Faster RCNN模型解析
    Faster RCNN是由Ross Girshick由何凯明等人在2016年将其用于目标检测任务中，能够完成高效的与传统的RCNN相比，利用RPN(Region Proposal Networks)完成候选框的选择，Fast RCNN的结构如下图所示：
 
 ![frcnn](./frcnn.png)
