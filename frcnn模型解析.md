@@ -7,7 +7,7 @@ Welcome to the ModelArts-Lab wiki!
 如图，Faster R-CNN网络分为两部分，一是Region Proposal Network(RPN)，二是Fast R-CNN。其中RPN包括图中proposals和conv layers，Fast R-CNN包括卷积层、ROI pooling及后面全连接层等部分。卷积层是被RPN和Fast R-CNN两部分共享的。
 Faster RCNN首先将整张图片输进CNN，提取图片的feature maps。将图片特征输入到到RPN，得到候选框的特征信息。RPN对于候选框中提取出的特征，使用分类器判别是否属于待识别的目标的候选框,将属于某一类别的候选框，用回归器进一步调整其位置。最后将目标框和图片的特征向量输入到Roi pooling层，再通过分类器进行Softmax分类，完成目标检测的任务。RPN能够协助Fast RNN将注意力集中在候选框中。
 ## 卷积层
-Faster RCNN首先将整张图片输进CNN，提取图片的feature map，将图片特征输入到到RPN，得到候选框的特征信息。这里我们采用VGG16完成feature map的提取。
+Faster RCNN首先将整张图片输进CNN，提取图片的feature map，将图片特征输入到到RPN，得到候选框的特征信息。这里我们采用VGG16完成feature map的提取。VGG16的结构如下所示：
 
 ```
 def nn_base(input_tensor=None, trainable=False):
@@ -133,9 +133,8 @@ class RoiPoolingConv(Layer):
 
         assert(len(x) == 2)
 
-        #特征图
+        #特征图和原始图像上框的坐标
         img = x[0]
-        #原始图像上框的坐标
         rois = x[1]
 
         input_shape = K.shape(img)
@@ -156,7 +155,7 @@ class RoiPoolingConv(Layer):
 
             #NOTE: the RoiPooling implementation differs between theano and tensorflow due to the lack of a resize op
             # in theano. The theano implementation is much less efficient and leads to long compile times
-            #真的roi pooling
+            
             if self.dim_ordering == 'th':
                 for jy in range(num_pool_regions):
                     for ix in range(num_pool_regions):
@@ -186,7 +185,7 @@ class RoiPoolingConv(Layer):
                 y = K.cast(y, 'int32')
                 w = K.cast(w, 'int32')
                 h = K.cast(h, 'int32')
-                #使用的是mask rcnn中的ROIAlign，效果更好
+                
                 rs = tf.image.resize_images(img[:, y:y+h, x:x+w, :], (self.pool_size, self.pool_size))
                  print("resize_images",img[:, y:y+h, x:x+w, :].shape)
                  print("resize_result",rs.shape)
