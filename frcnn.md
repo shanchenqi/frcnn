@@ -6,7 +6,7 @@ Welcome to the ModelArts-Lab wiki!
 
 如图，Faster R-CNN网络分为两部分，一是Region Proposal Network(RPN)，二是Fast R-CNN。其中RPN包括图中proposals和conv layers，Fast R-CNN包括卷积层、ROI pooling及后面全连接层等部分。卷积层是被RPN和Fast R-CNN两部分共享的。
 Faster RCNN首先将整张图片输进CNN，提取图片的feature maps。将图片特征输入到到RPN，得到候选框的特征信息。RPN对于候选框中提取出的特征，使用分类器判别是否属于待识别的目标的候选框,将属于某一类别的候选框，用回归器进一步调整其位置。最后将目标框和图片的特征向量输入到Roi pooling层，再通过分类器进行Softmax分类，完成目标检测的任务。RPN能够协助Fast RNN将注意力集中在候选框中。
-##卷积层
+## 卷积层
 Faster RCNN首先将整张图片输进CNN，提取图片的feature map，将图片特征输入到到RPN，得到候选框的特征信息。这里我们采用VGG16完成feature map的提取。
 
 ```
@@ -87,7 +87,7 @@ def rpn(base_layers, num_anchors):
 Fast R-CNN改进了R-CNN,应用了Roi Pooling。
 由于在全连接层，需要输入固定大小的特征向量，而R-CNN网络经过warp操作统一成固定的大小再送入后续网络，导致图像的变形和扭曲。而且每一个proposal均需要单独进行特征提取，重复计算量大。Roi Pooling的输入是卷积层得到的feature map和RNP得到的anchor，将其分割成7 * 7大小的子窗口，对每个子窗口进行max-pooling操作，得到固定输出大小的feature map。而后进行后续的全连接层操作。
 
-##Classifier
+## Classifier
 分类器完成对候选区域的检测。利用RoI feature maps计算R类别，同时再次bounding box regression获得检测框最终的位置。
 ```
 def classifier(base_layers, input_rois, num_rois, nb_classes = 21, trainable=False):
