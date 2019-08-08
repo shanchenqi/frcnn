@@ -188,8 +188,8 @@ class RoiPoolingConv(Layer):
                 h = K.cast(h, 'int32')
                 #使用的是mask rcnn中的ROIAlign，效果更好
                 rs = tf.image.resize_images(img[:, y:y+h, x:x+w, :], (self.pool_size, self.pool_size))
-#                 print("resize_images",img[:, y:y+h, x:x+w, :].shape)
-#                 print("resize_result",rs.shape)
+                 print("resize_images",img[:, y:y+h, x:x+w, :].shape)
+                 print("resize_result",rs.shape)
                 outputs.append(rs)
 
         final_output = K.concatenate(outputs, axis=0)
