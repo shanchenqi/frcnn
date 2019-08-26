@@ -4,10 +4,10 @@ Welcome to the ModelArts-Lab wiki!
 
 ![frcnn](./frcnn.png)
 
-如图，Faster R-CNN网络分为两部分，一是Region Proposal Network(RPN)，二是Fast R-CNN。其中RPN包括图中proposals和conv layers，Fast R-CNN包括卷积层、ROI pooling及后面全连接层等部分。卷积层是被RPN和Fast R-CNN两部分共享的。
-Faster RCNN首先将整张图片输进CNN，提取图片的feature maps。将图片特征输入到到RPN，得到候选框的特征信息。RPN对于候选框中提取出的特征，使用分类器判别是否属于待识别的目标的候选框,将属于某一类别的候选框，用回归器进一步调整其位置。最后将目标框和图片的特征向量输入到Roi pooling层，再通过分类器进行Softmax分类，完成目标检测的任务。RPN能够协助Fast RNN将注意力集中在候选框中。
+如图，Faster R-CNN网络分为两部分，一是Region Proposal Network(RPN)，二是Fast R-CNN。其中RPN包括图中proposals和conv layers，Fast R-CNN包括卷积层、ROI pooling及后面全连接层等部分。
+Faster RCNN首先将整张图片输进CNN，提取图片的feature maps。将图片特征输入到到RPN，得到候选框的特征信息。RPN对于候选框中提取出的特征，使用分类器判别是否属于待识别的目标的候选框,将属于某一类别的候选框，用回归器进一步调整其位置。最后将目标框和图片的特征向量输入到Roi pooling层，再通过分类器进行分类，完成目标检测的任务。RPN能够协助Fast RNN将注意力集中在候选框中。
 ## 卷积层
-Faster RCNN首先将整张图片输进CNN，提取图片的feature map，再将其输入到到RPN，得到候选框的特征信息。这里我们采用VGG16完成feature map的提取。VGG16的结构如下所示：
+Faster RCNN首先将整张图片输进CNN，提取图片的feature map，再将其输入到到RPN，得到候选框的特征信息。这里我们采用VGG16完成feature map的提取。卷积层是被RPN和Fast R-CNN两部分共享的。
 
 
 ## RPN
@@ -18,7 +18,7 @@ RPN将任意尺寸大小的图片作为输入，输出若干个矩形候选框�
 
 滑动窗口的中心在图像上对应一片区域，计算出该区域的中心位置后以该位置为中心，按3种scale、每种scale各有3种长宽比取9个矩形区域。这些区域就是提取到的anchors boxes。可见，feature maps中的一个位置，共有9个anchors，3种scale可以根据具体情况更改的，更改时最好能使最大的scale能基本将input image覆盖。
 在确定好k个anchor box之后，就能确定相应的位置信息，通过2次bounding-box regression对位置进行修正。
-首先判断anchors是否为前景，使用softmax classifier对anchors进行二分类，输出两个概率值，即图中左侧对应的2k score。其次，计算对于anchors的bounding box regression偏移量(x,y,w,h)，以修正边框位置,即图中右侧4k coordinates。
+首先判断anchors是否为前景，使用classifier对anchors进行二分类，输出两个概率值，即图中左侧对应的2k score。其次，计算对于anchors的bounding box regression偏移量(x,y,w,h)，以修正边框位置,即图中右侧4k coordinates。
 最后将两者结合生成region proposals，同时剔除太小和超出边界的proposals，最后将提取到的proposals提交给后面的Roi Pooling层。
 
 ## Roi Pooling
